@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:todo_getx/controllers/auth_controller.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
 import 'package:todo_getx/models/todo_model.dart';
 import 'package:todo_getx/views/add_todo_View.dart';
+import 'package:todo_getx/views/login_view.dart';
 
 class HomeView extends StatelessWidget {
-  const HomeView({super.key});
+  HomeView({super.key});
+
+  final AuthController authController = Get.put(AuthController());
+  final TodoController todoController = Get.put(TodoController());
 
   @override
   Widget build(BuildContext context) {
-    final TodoController todoController = Get.put(TodoController());
+    todoController.fetchTodos();
+    print('fetchTodos');
 
     return Scaffold(
       appBar: AppBar(
@@ -19,6 +25,7 @@ class HomeView extends StatelessWidget {
       ),
       body: Obx(
         () => Container(
+          color: const Color.fromARGB(255, 255, 255, 255),
           padding: EdgeInsets.only(bottom: 20),
           child: Column(
             children: [
@@ -38,49 +45,57 @@ class HomeView extends StatelessWidget {
                       ),
                       trailing: IconButton(
                         onPressed: () {
-                          todoController.delete(index);
+                          todoController.deleteTodo(todo.docid ?? '');
                         },
                         icon: Icon(Icons.delete),
                       ),
+                      onTap: () {
+                        Get.to(AddTodoView(todo: todo));
+                      },
                     );
                   },
                 ),
               ),
-              Obx(() {
-                bool anyCompleted = todoController.todoList.any(
-                  (todo) => todo.isDone,
-                );
-                return anyCompleted
-                    ? ElevatedButton(
-                      style: ButtonStyle(),
-                      onPressed: () {
-                        todoController.delete_compled();
-                      },
-                      child: Icon(Icons.delete),
-                    )
-                    : SizedBox.shrink();
-              }),
+              if (todoController.todoList.any((todo) => todo.isDone))
+                ElevatedButton(
+                  onPressed: () {
+                    todoController.delete_compled();
+                  },
+                  child: Icon(Icons.delete),
+                ),
             ],
           ),
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            onPressed: () {
-              Get.to(AddTodoView());
-            },
-            child: Icon(Icons.add),
-          ),
-          SizedBox(height: 20),
-          FloatingActionButton(
-            onPressed: () {
-              Get.to(AddTodoView());
-            },
-            child: Icon(Icons.add),
-          ),
-        ],
+      floatingActionButton: Obx(
+        () => Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              onPressed: () {
+                Get.to(() => AddTodoView());
+              },
+              child: Icon(Icons.add),
+            ),
+            SizedBox(height: 20),
+            FloatingActionButton(
+              heroTag: null,
+              onPressed: () {
+                if (authController.user.value?.uid.isNotEmpty ?? false) {
+                  todoController.clear();
+                  authController.signOut();
+                } else {
+                  Get.off(LoginView());
+                }
+              },
+              child: Icon(
+                authController.user.value?.uid == null
+                    ? Icons.account_circle
+                    : Icons.logout_outlined,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

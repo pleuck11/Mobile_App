@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
+import 'package:todo_getx/models/todo_model.dart';
 
-class AddTodoView extends StatelessWidget {
-  AddTodoView({super.key});
+class AddTodoView extends StatefulWidget {
+  AddTodoView({super.key, this.todo});
+  TodoModel? todo;
 
+  @override
+  State<AddTodoView> createState() => _AddTodoViewState();
+}
+
+class _AddTodoViewState extends State<AddTodoView> {
   final TodoController todoController = Get.put(TodoController());
+
   final TextEditingController titleController = TextEditingController();
+
   final TextEditingController detailController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.todo != null) {
+      titleController.text = widget.todo!.title;
+      detailController.text = widget.todo!.subtitle;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add To-do"),
+        title: Text(widget.todo != null ? "modify" : "Add Todo"),
         backgroundColor: Colors.green,
       ),
       body: Padding(
@@ -44,17 +62,30 @@ class AddTodoView extends StatelessWidget {
                 border: OutlineInputBorder(),
                 hintText: "Fill in details",
               ),
-              style: const TextStyle(color: Colors.black), // เพิ่ม style ที่นี่
+              style: const TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 20),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  todoController.addTodo(
-                    titleController.text,
-                    detailController.text,
-                  );
+                  if (detailController.text.isEmpty) return;
+                  if (widget.todo != null) {
+                    widget.todo!.title = titleController.text;
+                    widget.todo!.subtitle = detailController.text;
+                    print(widget.todo!.toJson());
+                    todoController.updateTodo(widget.todo!);
+                  } else {
+                    todoController.addTodo(
+                      titleController.text,
+                      detailController.text,
+                    );
+                  }
+                  // todoController.addTodo(
+                  //   titleController.text,
+                  //   detailController.text,
+                  // );
                   Get.back();
+                  Get.snackbar("Success", "Recorded successfully");
                 },
                 child: const Text("Record"),
               ),

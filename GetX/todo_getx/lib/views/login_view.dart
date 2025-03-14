@@ -13,8 +13,8 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(text:"pp@hh.com");
+  final TextEditingController passwordController = TextEditingController(text:"121212");
   AuthController authController = Get.put(AuthController());
 
   @override
