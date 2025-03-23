@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:todo_getx/views/home_view.dart';
-import 'package:todo_getx/views/login_view.dart';
 
 class AuthController extends GetxController {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;

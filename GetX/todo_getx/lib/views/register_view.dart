@@ -4,6 +4,7 @@ import 'package:todo_getx/controllers/auth_controller.dart';
 import 'package:todo_getx/views/login_view.dart';
 import 'package:todo_getx/widgets/app_text_field.dart';
 
+// ignore: must_be_immutable
 class RegisterView extends StatelessWidget {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();

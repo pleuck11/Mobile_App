@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:todo_getx/controllers/todo_controller.dart';
 import 'package:todo_getx/models/todo_model.dart';
 
+// ignore: must_be_immutable
 class AddTodoView extends StatefulWidget {
   AddTodoView({super.key, this.todo});
   TodoModel? todo;
